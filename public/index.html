@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat AGBot</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="chat-bubble" id="chatBubble" aria-label="Abrir chat">
+      <span>Chat</span>
+    </div>
+
+    <div class="chat-window hidden" id="chatWindow" role="dialog" aria-modal="true" aria-label="Ventana de chat">
+      <div class="chat-header">
+        <span>AGBot</span>
+        <div class="chat-actions">
+          <button id="callButton" aria-label="Modo notas de voz">☎</button>
+          <button id="closeChat" aria-label="Cerrar chat">×</button>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <form class="chat-form" id="chatForm">
+        <textarea id="chatInput" placeholder="Escribe tu mensaje..." rows="2" required></textarea>
+        <div class="composer-actions">
+          <button type="button" id="recordButton" class="record-button" aria-label="Grabar audio">●</button>
+          <button type="submit" id="sendButton">Enviar</button>
+        </div>
+      </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@elevenlabs/client/dist/lib.iife.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

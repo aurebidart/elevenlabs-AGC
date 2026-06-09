@@ -5,6 +5,7 @@
   "private": true,
   "description": "Simple web chat bubble connecting to Eleven Labs AGBot",
   "scripts": {
+    "build": "echo \"No build required\"",
     "start": "node server.js"
   },
   "dependencies": {

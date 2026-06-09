@@ -18,15 +18,9 @@ const HTTPS_KEY_PATH = process.env.HTTPS_KEY_PATH;
 const HTTPS_CERT_PATH = process.env.HTTPS_CERT_PATH;
 const AGENT_ID = process.env.ELEVENLABS_AGENT_ID || process.env.VITE_ELEVENLABS_AGENT_ID;
 const API_KEY = process.env.ELEVENLABS_API_KEY;
-const TTS_VOICE_ID = process.env.ELEVENLABS_TTS_VOICE_ID || process.env.ELEVENLABS_VOICE_ID;
-const TTS_MODEL_ID = process.env.ELEVENLABS_TTS_MODEL_ID || "eleven_multilingual_v2";
 
 if (!API_KEY || !AGENT_ID) {
   console.warn("Warning: ELEVENLABS_API_KEY or ELEVENLABS_AGENT_ID / VITE_ELEVENLABS_AGENT_ID is missing in .env");
-}
-
-if (!TTS_VOICE_ID) {
-  console.warn("Warning: ELEVENLABS_TTS_VOICE_ID / ELEVENLABS_VOICE_ID is missing in .env");
 }
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -57,55 +51,6 @@ app.get("/api/signed-url", async (req, res) => {
   } catch (error) {
     console.error("Signed URL proxy error:", error);
     res.status(500).json({ error: "Unable to obtain signed URL." });
-  }
-});
-
-app.post("/api/tts", async (req, res) => {
-  try {
-    if (!API_KEY || !TTS_VOICE_ID) {
-      return res.status(500).json({ error: "Server configuration error: missing API key or TTS voice ID." });
-    }
-
-    const text = String(req.body?.text || "").trim();
-    if (!text) {
-      return res.status(400).json({ error: "Text is required." });
-    }
-
-    const endpoint = `https://api.elevenlabs.io/v1/text-to-speech/${TTS_VOICE_ID}`;
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "xi-api-key": API_KEY,
-        "Content-Type": "application/json",
-        "Accept": "audio/mpeg"
-      },
-      body: JSON.stringify({
-        text,
-        model_id: TTS_MODEL_ID,
-        voice_settings: {
-          stability: 0.45,
-          similarity_boost: 0.75
-        }
-      })
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error("TTS error:", response.status, errorBody);
-      return res.status(response.status).json({
-        error: "Failed to synthesize audio.",
-        status: response.status,
-        details: errorBody
-      });
-    }
-
-    const audio = Buffer.from(await response.arrayBuffer());
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.setHeader("Cache-Control", "no-store");
-    res.send(audio);
-  } catch (error) {
-    console.error("TTS proxy error:", error);
-    res.status(500).json({ error: "Unable to synthesize audio." });
   }
 });
 

@@ -97,6 +97,8 @@ body {
   padding: 10px 12px;
   border-radius: 8px;
   box-shadow: 0 1px 1px rgba(15, 23, 42, 0.12);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .message.user,
@@ -114,38 +116,6 @@ body {
   align-self: flex-start;
   background: #ffffff;
   color: #111827;
-}
-
-.audio-message {
-  width: min(260px, 78vw);
-  display: grid;
-  gap: 6px;
-}
-
-.audio-message audio {
-  width: 100%;
-  height: 38px;
-}
-
-.audio-meta {
-  color: #667781;
-  font-size: 0.75rem;
-  text-align: right;
-}
-
-.audio-message details {
-  color: #374151;
-  font-size: 0.82rem;
-}
-
-.audio-message summary {
-  cursor: pointer;
-  color: #667781;
-}
-
-.audio-message p {
-  margin: 6px 0 0;
-  line-height: 1.4;
 }
 
 .chat-form {
@@ -166,9 +136,8 @@ body {
 }
 
 .composer-actions {
-  display: grid;
-  grid-template-columns: 46px 1fr;
-  gap: 8px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .chat-form button {
@@ -181,30 +150,7 @@ body {
   cursor: pointer;
 }
 
-.chat-form .record-button {
-  width: 46px;
-  padding: 0;
-  border-radius: 50%;
-  background: #25d366;
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.chat-form .record-button.recording {
-  background: #d93025;
-  animation: pulse 900ms ease-in-out infinite;
-}
-
 .chat-form button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.08);
-  }
 }

@@ -1,6 +1,6 @@
 # Eleven Labs AGBot Demo
 
-Proyecto web con una ventana de chat estilo intercambio de audios. El usuario puede grabar una nota de voz, el navegador la transcribe y la app manda solo texto al agente de ElevenLabs para ahorrar minutos de STT y tiempo de llamada. La respuesta del agente se convierte a audio con TTS y los audios quedan guardados localmente en el navegador.
+Proyecto web mínimo con un botón de chat que abre una ventana y envía mensajes a la API de Eleven Labs para conectar con el chatbot AGBot.
 
 ## Cómo usar
 
@@ -12,9 +12,6 @@ Proyecto web con una ventana de chat estilo intercambio de audios. El usuario pu
    ```text
    ELEVENLABS_API_KEY=sk_...
    ELEVENLABS_AGENT_ID=agent_...
-   ELEVENLABS_TTS_VOICE_ID=voice_...
-   # Opcional:
-   ELEVENLABS_TTS_MODEL_ID=eleven_multilingual_v2
    # o, si usas la variable del frontend existente:
    VITE_ELEVENLABS_AGENT_ID=agent_...
    ```
@@ -60,14 +57,12 @@ Si el navegador del dispositivo remoto sigue mostrando sitio no seguro, es porqu
 
 ## Estructura
 
-- `server.js`: backend Express que solicita un token de conversación a ElevenLabs y proxyea TTS sin exponer la API key.
+- `server.js`: backend Express que solicita un token de conversación a Eleven Labs.
 - `public/index.html`: página simple y sin contenido extra.
-- `public/style.css`: estilos para burbuja, ventana y mensajes de audio.
-- `public/script.js`: lógica de apertura de chat, grabación, transcripción en navegador, envío de texto y persistencia local de audios.
+- `public/style.css`: estilos para burbuja y ventana de chat.
+- `public/script.js`: lógica de apertura de chat y envío de mensajes.
 
 ## Notas
 
-- Los audios se guardan en IndexedDB del navegador. No se suben al servidor.
-- La transcripción usa Web Speech API (`SpeechRecognition` / `webkitSpeechRecognition`). Si el navegador no la soporta, usa el campo de texto. Según el navegador, el reconocimiento puede depender de servicios del proveedor del navegador; en todos los casos, no consume STT de ElevenLabs.
-- Para ahorrar STT de ElevenLabs, el audio grabado no se manda al agente; solo se envía la transcripción.
+- El frontend es muy simple y estático.
 - El backend usa el `ELEVENLABS_API_KEY` y `ELEVENLABS_AGENT_ID` de `.env`.

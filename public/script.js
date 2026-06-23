@@ -11,6 +11,7 @@ let textConversation = null;
 let voiceConversation = null;
 let startingTextConversation = false;
 let startingVoiceConversation = false;
+let shouldEndVoiceCallWhenReady = false;
 let pendingTypingMessage = null;
 
 const addMessage = (text, role) => {
@@ -48,6 +49,12 @@ const openChat = async () => {
   }
 };
 
+const closeChatWindow = () => {
+  chatWindow.classList.add("hidden");
+  shouldEndVoiceCallWhenReady = true;
+  endVoiceCall();
+};
+
 const toggleChat = () => {
   if (chatWindow.classList.contains("hidden")) {
     openChat().catch((error) => {
@@ -55,7 +62,7 @@ const toggleChat = () => {
       addMessage("No se pudo iniciar el chat. Intenta de nuevo.", "bot");
     });
   } else {
-    chatWindow.classList.add("hidden");
+    closeChatWindow();
   }
 };
 
@@ -140,6 +147,7 @@ const startVoiceCall = async () => {
   if (!window.fetch) throw new Error("Fetch no está disponible.");
 
   startingVoiceConversation = true;
+  shouldEndVoiceCallWhenReady = false;
   updateCallButton(true, true);
   addMessage("Iniciando llamada de voz...", "bot");
   try {
@@ -154,7 +162,7 @@ const startVoiceCall = async () => {
       throw new Error("URL firmada inválida.");
     }
 
-    voiceConversation = await Conversation.startSession({
+    const conversation = await Conversation.startSession({
       signedUrl,
       textOnly: false,
       onConnect: ({ conversationId }) => {
@@ -185,30 +193,48 @@ const startVoiceCall = async () => {
         }
       },
     });
+    voiceConversation = conversation;
+    if (shouldEndVoiceCallWhenReady) {
+      await endVoiceCall();
+    }
   } catch (error) {
     console.error(error);
     addMessage("No se pudo iniciar la llamada.", "bot");
     updateCallButton(false, false);
   } finally {
     startingVoiceConversation = false;
+    shouldEndVoiceCallWhenReady = false;
   }
 };
 
 const endVoiceCall = async () => {
   if (!voiceConversation) return;
+  const conversation = voiceConversation;
+  voiceConversation = null;
+  updateCallButton(false, false);
   try {
-    await voiceConversation.endSession();
+    await conversation.endSession();
   } catch (error) {
     console.error("Error al finalizar la llamada:", error);
-  } finally {
-    voiceConversation = null;
-    updateCallButton(false, false);
   }
+};
+
+const endVoiceCallBeforeLeaving = () => {
+  shouldEndVoiceCallWhenReady = true;
+  if (!voiceConversation) return;
+  const conversation = voiceConversation;
+  voiceConversation = null;
+  updateCallButton(false, false);
+  conversation.endSession().catch((error) => {
+    console.error("Error al finalizar la llamada al cerrar la ventana:", error);
+  });
 };
 
 chatBubble.addEventListener("click", toggleChat);
 closeChat.addEventListener("click", toggleChat);
 callButton.addEventListener("click", toggleCall);
+window.addEventListener("pagehide", endVoiceCallBeforeLeaving);
+window.addEventListener("beforeunload", endVoiceCallBeforeLeaving);
 
 chatForm.addEventListener("submit", async (event) => {
   event.preventDefault();
